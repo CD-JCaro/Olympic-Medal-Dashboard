@@ -14,15 +14,14 @@
   <script>
     // Javascript that request Data
     var getData;
-    function update(Year1,Year2,Country,Season,Sport,Medal){
-      getData = $.get(`/query?Year1=${Year1}&Year2=${Year2}&Country=${Country}&Season=${Season}&Sport=${Sport}&Medal=${Medal}`);
+    function updateData(Year1,Year2,Country,Season,Event,Sport,Medal){
+      getData = $.get(`/query?Year1=${Year1}&Year2=${Year2}&Country=${Country}&Season=${Season}&Event=${Event}&Sport=${Sport}&Medal=${Medal}`);
     };
-    update("1944","1948","United States","Both","Aquatics","All");
+    updateData("1900","1920","All","All","All","All","All");
     getData.done(function(results){
       console.log(results);
     })
   </script>
 
 </body>
-
 </html>
