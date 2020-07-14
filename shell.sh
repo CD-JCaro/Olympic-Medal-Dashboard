@@ -1,0 +1,1 @@
+FLASK_APP=Flask/Olympic.py flask run
