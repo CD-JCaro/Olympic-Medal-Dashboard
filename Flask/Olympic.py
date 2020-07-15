@@ -12,7 +12,7 @@ app = Flask(__name__)
 # Connect to MongoDB
 conn = 'mongodb://localhost:27017'
 
-conn = os.environ.get('DATABASE_URL', '')
+conn = os.environ.get('MONGODB_URI', '')
 
 # Pass connection to the pymongo instance.
 client = pymongo.MongoClient(conn)
