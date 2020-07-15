@@ -5,10 +5,10 @@ from pymongo import MongoClient
 
 def initDB():
     
-    print(os.environ.get('DATABASE_URL', ''))
+    print(os.environ.get('MONGODB_URI', ''))
     print("it work?")
     # Connect to MongoDB
-    client = MongoClient(os.environ.get('DATABASE_URL', ''))
+    client = MongoClient(os.environ.get('MONGODB_URI', ''))
 
     # Create database and collection
     db = client['Olympics']
