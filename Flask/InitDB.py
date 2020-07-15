@@ -1,9 +1,12 @@
 # Dependencies
 import pandas as pd
+import os
 from pymongo import MongoClient
 
 def initDB():
     
+    print(os.environ.get('DATABASE_URL', ''))
+    print("it work?")
     # Connect to MongoDB
     client = MongoClient(os.environ.get('DATABASE_URL', ''))
 
