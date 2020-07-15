@@ -5,7 +5,7 @@ from pymongo import MongoClient
 def initDB():
     
     # Connect to MongoDB
-    client = MongoClient()
+    client = MongoClient(os.environ.get('DATABASE_URL', ''))
 
     # Create database and collection
     db = client['Olympics']
