@@ -44,6 +44,31 @@ function getYears(data)
     return Object.keys(years);
 }
 
+//provides a list of all countries in the dataset
+//too lazy to generalize the getYears function
+function getCountries(data)
+{
+    var country = {};
+
+    data.forEach(element => 
+        {
+            country[element.Country] = 1; 
+        });
+    
+    return Object.keys(country);
+}
+
+function getValues(data, cat)
+{
+    var results = {};
+
+    data.forEach(element => 
+        {
+            results[element[cat]] = 1; 
+        });
+    
+    return Object.keys(results);
+}
 //returns how many of a certain medal are present in the dataset
 // if no medal is provided, all medals will be returned
 function getMedalCount(data, medal = "")
@@ -145,7 +170,8 @@ function setupLayout(layout, year, start, increment, count)
         showdividers: true,
         tickson: "boundaries",
         ticklen: 15,
-        title: year
+        title: year,
+        xaxis: {tickangle: -45}
     };
 }
 
@@ -160,7 +186,7 @@ function createBar(data)
     var layout = 
     {
          barmode: "stack",
-         title: `Medal Breakdown by gender for years ${minMax[0]}-${minMax[1]}`
+         title: `Medal Breakdown by gender for years ${startFilter}-${endFilter}`
     };
 
     //for dividing up the render area for our yearly bars
@@ -305,7 +331,7 @@ function createArea(data)
 
     var layout = 
     {
-        title:`Medal type breakdown for ${minmax[0]}-${minmax[1]}`
+        title:`Medal type breakdown for ${startFilter}-${endFilter}`
     };
 
     Plotly.newPlot("area-chart", data, layout);
@@ -315,10 +341,11 @@ function createArea(data)
 // End create area chart
 /////////////////////////////////////////////////////////////
 
+var countries = undefined;
 // do the thing
 function init()
 {
-    updateData("1900","2000","All","All","All","All", "All");
+    updateData("1896","2014","All","All","All","All", "All");
 
     getData.done(function(results)
     {
@@ -327,9 +354,11 @@ function init()
         createBurst(results);
 
         createArea(results);
+
+        initDropdowns(results);
     });
 
-    updateData("1900","2000","All","All","All","All", "All");
+    updateData("1896","2014","All","All","All","All", "All");
 
     getData.done(function(results)
     {
@@ -358,8 +387,8 @@ function createMap(geoData, olympics)
 {
     if(myMap == undefined)
     {
-        var corner1 = L.latLng(90, 120)
-        var corner2 = L.latLng(-90, -120)
+        var corner1 = L.latLng(120, 200)
+        var corner2 = L.latLng(-120, -200)
         var bounds = L.latLngBounds(corner2, corner1);
 
         myMap = L.map("map", 
@@ -396,7 +425,8 @@ function setupLegend(olympics)
 
     var legend = L.control({position: 'bottomright'});
     
-    var ranges = ["1", `${Math.floor(total * 0.01)}`, `${Math.floor(total * 0.02)}`, `${Math.floor(total * 0.03)}`, `${Math.floor(total * 0.04)}`];
+    var ranges = ["1", `${Math.max(Math.floor(total * 0.01), 1)}`, `${Math.max(Math.floor(total * 0.02), 1)}`, 
+                `${Math.max(Math.floor(total * 0.03), 1)}`, `${Math.max(Math.floor(total * 0.04), 1)}`];
 
     legend.onAdd = function(map) 
     {
@@ -448,19 +478,39 @@ function setupCountries(geoJson, olympics, myMap)
     //so many lines... so much time
     layer = L.geoJson(geoJson, {
         style: function(feature) {
+            //super ugly but meh
+            var name = (feature.properties.ADMIN == 'United States of America' ? "USA": feature.properties.ADMIN );
+            if (name == "United Kingdom")
+            {
+                name = "UK"
+            }
+            else if(name == "United Republic of Tanzania")
+            {
+                name = "Tanzania"
+            }
           return {
             color: "white",
-                        fillColor: chooseCountryColor(total, getMedalCount(filterData(olympics,"Country", (feature.properties.ADMIN == 'United States of America' ? "USA": feature.properties.ADMIN )))),
+                        fillColor: chooseCountryColor(total, getMedalCount(filterData(olympics,"Country", name))),
             fillOpacity: 0.5,
             weight: 1.5
           };
         },
         onEachFeature: function(feature, layer) 
         {  
+            //time crunch why
+            var name = (feature.properties.ADMIN == 'United States of America' ? "USA": feature.properties.ADMIN );
+            if (name == "United Kingdom")
+            {
+                var name = "UK"
+            }
+            else if(name == "United Republic of Tanzania")
+            {
+                name = "Tanzania"
+            }
           layer.bindPopup("<h1>" + feature.properties.ADMIN + 
-          "</h1> <hr> <h2>Gold:" + getMedalCount(filterData(olympics, "Country", (feature.properties.ADMIN == 'United States of America' ? "USA": feature.properties.ADMIN )), "Gold") + "<br>" +
-          "Silver:" + getMedalCount(filterData(olympics, "Country", (feature.properties.ADMIN == 'United States of America' ? "USA": feature.properties.ADMIN )), "Silver") + "<br>" +
-          "Bronze:" + getMedalCount(filterData(olympics, "Country", (feature.properties.ADMIN == 'United States of America' ? "USA": feature.properties.ADMIN )), "Bronze") + "</h2>");
+          "</h1> <hr> <h2>Gold:" + getMedalCount(filterData(olympics, "Country", name), "Gold") + "<br>" +
+          "Silver:" + getMedalCount(filterData(olympics, "Country", name), "Silver") + "<br>" +
+          "Bronze:" + getMedalCount(filterData(olympics, "Country", name), "Bronze") + "</h2>");
         }
       }).addTo(myMap);
 }
@@ -469,26 +519,100 @@ function setupCountries(geoJson, olympics, myMap)
 // End map area
 /////////////////////////////////////////////////////////////
 
-var button = d3.select(".stuff");
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+// super ugly but im in a time crunch so here ya go
+var startFilter = "1896"
+var endFilter = "2014"
+var countryFilter = "USA"
+var seasonFilter = "All"
+var sportFilter = "All"
 
-var beginYear = '2000';
-var endYear = '2012';
+var summer = true;
+var winter = true;
+var summerCB = d3.select("#summer");
 
-button.on("click", function() 
+summerCB.on("change", function()
 {
-    if(beginYear == '2000')
+    summer = summerCB.property("checked");
+    updateDropdowns();
+});
+
+var winterCB = d3.select("#winter");
+winterCB.on("change", function()
+{
+    winter = winterCB.property("checked");
+    updateDropdowns();
+});
+
+function updateDropdowns()
+{
+
+    if(winter && summer)
     {
-        beginYear = '1900';
-        endYear = '2000'
+        seasonFilter = "All";
+    }
+    else if(summer)
+    {
+        seasonFilter = "Summer";
+    }
+    else if(winter)
+    {
+        seasonFilter = "Winter";
     }
     else
     {
-        beginYear = '2000';
-        endYear = '2000';
-    }console.log("hi");
+        seasonFilter = "";
+    }
+
+    updateData(startFilter, endFilter, "All",seasonFilter,"All","All", "All");
+
+    getData.done(function(results)
+    {
+        initDropdowns(results);
+    });
+}
+///////////////////////////////////////////////////////////
 
 
-    updateData(beginYear, endYear, "Canada","All","All","Aquatics", "All");
+var button = d3.select(".stuff");
+
+var filters = [d3.select("#startyear"), d3.select("#endyear"), d3.select("#country")];
+
+button.on("click", function() 
+{
+    var newStartFilter = d3.select("#startyear").property("value");
+    newStartFilter = newStartFilter == ""? "1896": newStartFilter;
+
+    var newEndFilter = d3.select("#endyear").property("value");
+    newEndFilter = newEndFilter == ""? "2014": newEndFilter;
+
+    var newCountryFilter = d3.select("#country").property("value");
+
+    var newSportFilter = d3.select("#sport").property("value");
+
+    var redoMap = false;
+
+    if(parseInt(newStartFilter) > parseInt(newEndFilter))
+    {
+        //should probably swap the values in the text box buuuuuut....
+        //super fancy swap
+        var temp = newStartFilter;
+        newStartFilter = newEndFilter;
+        newEndFilter = temp;
+    }
+
+    if(startFilter != newStartFilter || endFilter != newEndFilter || sportFilter != newSportFilter)
+    {
+        redoMap = true;
+    }
+
+    startFilter = newStartFilter;
+    endFilter = newEndFilter;
+    countryFilter = newCountryFilter;
+    sportFilter = newSportFilter;
+
+    updateData(startFilter, endFilter, countryFilter,seasonFilter,"All",sportFilter, "All");
 
     getData.done(function(results)
     {
@@ -497,13 +621,50 @@ button.on("click", function()
         createArea(results);
     });
 
-    updateData(beginYear, endYear, "All","All","All","Aquatics", "All");
-
-    getData.done(function(results)
+    if(redoMap)
     {
-        worldMap(results);
-    });
+        updateData(startFilter, endFilter, "All",seasonFilter,"All",sportFilter, "All");
 
+        getData.done(function(results)
+        {
+            worldMap(results);
+        });
+    }
 });
+
+function populateDropdown(items, id, all)
+{
+    var dropdown = d3.select(id);
+    dropdown.html("");
+
+    if(all)
+    {
+        addSelect("All", dropdown);
+    }
+    
+    items.forEach(name => addSelect(name, dropdown));
+
+    dropdown.property('selected', 'USA');
+}
+
+function addSelect(name, dropdown)
+{
+    var selected = name =="USA"
+    var select = dropdown.append("option").text(name);
+    select.property("value", name);
+    select.property("selected", selected);
+    
+}
+
+function initDropdowns(results)
+{
+    countries = getValues(results, "Country");
+    countries.sort();
+    populateDropdown(countries, "#country", false);
+
+    sports = getValues(results, "Sport");
+    sports.sort();
+    populateDropdown(sports, "#sport", true);
+}
 
 init();
