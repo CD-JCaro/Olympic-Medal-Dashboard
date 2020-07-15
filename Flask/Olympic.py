@@ -1,8 +1,9 @@
 # Dependencies
 from flask import Flask, render_template, request, jsonify
 import pymongo
+from InitDB import initDB
 
-
+initDB()
 # Create an instance of our Flask app.
 app = Flask(__name__)
 

@@ -17,10 +17,73 @@
 </head>
 
 <body>
-  <div class = "container">
-
+  <div class = "container-fluid">
+    <div class = "row">
+      <div class = "col-sm-12">
+        <img src = "../static/resource/rings.jpg" class = "center" style = "width: 300px; height:300px">
+      </div>
+    </div>
     <div class = "row row-margin">
       <div class = "col-sm-12">
+        <h1>Olympic Medal Dashboard</h1>
+      </div>
+    </div>
+    <div class = "row row-margin">
+      <div class = "col-sm-4">
+        <form>
+          <div class="form-group">
+            <ul class="list-group" id="filters"></ul>
+              <li class="filter list-group-item">
+                <label for="date">Enter Start Year</label>
+                <input class="form-control" id="startyear" type="text" placeholder="1896"></input>
+              </li>
+              <li class="filter list-group-item">
+                <label for="date">Enter End Year</label>
+                <input class="form-control" id="endyear" type="text" placeholder="2014"></input>
+              </li>
+            </ul>
+          </div>
+        </form>
+      </div>
+      <div class = "col-sm-4">
+        <form>
+          <div class="form-group">
+            <ul class="list-group" id="filters"></ul>
+              <li class="filter list-group-item">
+                <label for="country">Country</label>
+                <select id="country"></select>
+              </li>
+              <li class="filter list-group-item">
+                <label for="sport">Sport</label>
+                <select id="sport"></select>
+              </li>
+            </ul>
+          </div>
+          <button id="filter-btn" class = "stuff" type="button" class="btn btn-default">Filter Data</button>
+        </form>
+      </div>
+      <div class = "col-sm-4">
+        <form>
+          <div class="form-group">
+            <ul class="list-group" id="filters"></ul>
+              <li class="filter list-group-item">
+                <label for="winter"></label>
+                <input type="checkbox" id="winter" checked = "true">Winter Olympics</input>
+              </li>
+              <li class="filter list-group-item">
+                <label for="summer"></label>
+                <input type="checkbox" id="summer" checked = "true">Summer Olympics</input>
+              </li>
+            </ul>
+          </div>
+        </form>
+      </div>
+      
+    </div>
+
+
+    <div class = "row row-margin">
+      <div class = "col-md-12">
         <div id="stacked-bar"></div>
       </div>
     </div>
@@ -32,17 +95,13 @@
         <div id="pie"></div>
       </div>
     </div>
+
     <div class = "row row-margin">
       <div class = "col-sm-12">
         <div id="map" style="height: 600px; width: 100%;"></div>
       </div>
     </div>
   </div>
-  
-  <button type="button" class="btn btn-default btn-lg stuff">
-    Do Stuff
-  </button>
-
 
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
