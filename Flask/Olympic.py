@@ -1,18 +1,13 @@
 # Dependencies
 from flask import Flask, render_template, request, jsonify
 import pymongo
-import os
-from .InitDB import initDB
 
-initDB()
 
 # Create an instance of our Flask app.
 app = Flask(__name__)
 
 # Connect to MongoDB
 conn = 'mongodb://localhost:27017'
-
-conn = os.environ.get('MONGODB_URI', '')
 
 # Pass connection to the pymongo instance.
 client = pymongo.MongoClient(conn)
