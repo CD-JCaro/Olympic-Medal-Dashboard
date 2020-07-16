@@ -219,8 +219,6 @@ function createBar(data)
 /////////////////////////////////////////////////////////////
 function createBurst(data)
 {
-
-
     var male = filterData(data, "Gender", "Men");
     var female = filterData(data, "Gender", "Women");
 
