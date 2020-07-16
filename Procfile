@@ -1,1 +1,0 @@
-web: gunicorn Flask.Olympic:app
