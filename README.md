@@ -1,9 +1,9 @@
-# Project 2 Proposal:
-# Group 1: Christine Hall, Eduardo Panneflek, Jonathan Caro, Daniel De la Torre
+# Olympic Medal Dashboard:
+# Group: Christine Hall, Eduardo Panneflek, Jonathan Caro, Daniel De la Torre
 
 Topic - Olympic Sports and Medals (1896-2014)  
 
-# Repository Link: - https://github.com/CD-JCaro/Project-2
+# Repository Link: - https://github.com/CD-JCaro/Olympic-Medal-Dashboard
 
 Rationale: 
 When brainstorming where our group wanted to source datasets for our project, we identified Kaggle as the best option to explore. After exploring what resources Kaggle had to offer and briefly discussing what we wanted to do, we opted to look into the type of datasets that contained Olympic Games data.  
